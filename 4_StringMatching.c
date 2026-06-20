@@ -64,7 +64,7 @@ void plotter()
         stringmatching(text, pattern, n, m);
         fprintf(f3, "%d\t%d\n", m, count);
 
-        m = (m < 100) ? m + 10 : m + 100;
+        m = (m < 100) ? m + 10 : m + 100; //can also just be m+=10. the current version makes plotting faster
     }
 
     fclose(f1);
