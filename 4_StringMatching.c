@@ -4,7 +4,10 @@
 #include <string.h>
 #include <stdbool.h>
 
+#define MAX 1000
+
 int count = 0;
+
 bool stringmatching(char *text, char *pattern, int n, int m)
 {
     count = 0;
@@ -26,68 +29,72 @@ bool stringmatching(char *text, char *pattern, int n, int m)
 
 void plotter()
 {
+    static char text[MAX];
+    static char pattern[MAX];
+
     FILE *f1 = fopen("strbest.txt", "w");
-    FILE *f2 = fopen("strworst.txt", "w");
-    FILE *f3 = fopen("stravg.txt", "w");
-    char *text = (char *)malloc(1000 * sizeof(char));
-    char *pattern;
-    for (int i = 0; i < 1000; i++)
-        *(text + i) = 'a';
-    int m, n;
-    n = 1000;
-    m = 10;
-    while (m <= 1000)
+    FILE *f2 = fopen("stravg.txt", "w");
+    FILE *f3 = fopen("strworst.txt", "w");
+
+    srand(time(NULL));
+
+    int n = MAX;
+    for (int i = 0; i < n; i++)
+        text[i] = 'a';
+
+    int m = 10;
+    while (m <= MAX)
     {
-        pattern = (char *)malloc(m * sizeof(char));
-        count = 0;
-        for (int i = 0; i < m; i++) // best case
+        // best case: pattern is all 'a's -> matches immediately at i = 0
+        for (int i = 0; i < m; i++)
             pattern[i] = 'a';
         stringmatching(text, pattern, n, m);
         fprintf(f1, "%d\t%d\n", m, count);
 
-        count = 0;
-        pattern[m - 1] = 'b'; // worst case
+        // average case: random mix of 'a'/'b'/'c' -> mismatches found early on average
+        for (int i = 0; i < m; i++)
+            pattern[i] = 97 + rand() % 3;
         stringmatching(text, pattern, n, m);
         fprintf(f2, "%d\t%d\n", m, count);
 
-        count = 0;
-        for (int i = 0; i < m; i++) // avg case
-            pattern[i] = 97 + rand() % 3;
+        // worst case: pattern matches everywhere except the last char -> max comparisons per shift
+        for (int i = 0; i < m; i++)
+            pattern[i] = 'a';
+        pattern[m - 1] = 'b';
         stringmatching(text, pattern, n, m);
         fprintf(f3, "%d\t%d\n", m, count);
-        free(pattern);
-        if (m < 100)
-            m = m + 10;
-        else
-            m = m + 100;
+
+        m = (m < 100) ? m + 10 : m + 100;
     }
+
+    fclose(f1);
+    fclose(f2);
+    fclose(f3);
 }
 
 void tester()
 {
-    int m, n;
-    char text[100], pattern[100];
-    printf("Enter the pattern length: ");
-    scanf("%d", &m);
+    static char text[MAX], pattern[MAX];
+
     printf("Enter the pattern: ");
-    getchar();
     fgets(pattern, sizeof(pattern), stdin);
     pattern[strcspn(pattern, "\n")] = '\0';
-    printf("Enter the text length: ");
-    scanf("%d", &n);
+
     printf("Enter the text: ");
-    getchar();
     fgets(text, sizeof(text), stdin);
-    pattern[strcspn(text, "\n")] = '\0';
-    bool comparisons = stringmatching(text, pattern, n, m);
-     if (comparisons) {
+    text[strcspn(text, "\n")] = '\0';
+
+    int m = strlen(pattern);
+    int n = strlen(text);
+
+    bool found = stringmatching(text, pattern, n, m);
+    if (found)
         printf("\nPattern '%s' matched with Text '%s'\n", pattern, text);
-    } else {
+    else
         printf("\nPattern '%s' doesn't match with the Text '%s'\n", pattern, text);
-    }
 }
 
-void main()
+int main()
 {
     int ch;
     printf("Enter \n1.Tester\n2.Plotter\n");
@@ -103,4 +110,5 @@ void main()
     default:
         printf("Invalid choice.\n");
     }
+    return 0;
 }
