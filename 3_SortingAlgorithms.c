@@ -136,3 +136,123 @@ void plotter2()
         fprintf(f3, "%d\t%d\n", n, count);
 
         if (n < 10000)
+            n *= 10;
+        else
+            n += 10000;
+    }
+    fclose(f1);
+    fclose(f2);
+    fclose(f3);
+}
+
+void plotter3()
+{
+    static int a[MAX];   // static memory allocation
+    FILE *f;
+    f = fopen("selectionsort.txt", "w");
+    int n = 10;
+    while (n <= MAX)
+    {
+        for (int i = 0; i < n; i++)
+            a[i] = i;
+        count = 0;
+        selectionSort(a, n);
+        fprintf(f, "%d\t%d\n", n, count);
+
+        if (n < 10000)
+            n *= 10;
+        else
+            n += 10000;
+    }
+    fclose(f);
+}
+
+void plotter()
+{
+    int ch;
+    printf("\nEnter \n1. Bubble sort\n2. Insertion Sort.\n3. Selection Sort\n");
+    printf("Enter your choice: ");
+    scanf("%d", &ch);
+    switch (ch)
+    {
+    case 1:
+        plotter1();
+        break;
+    case 2:
+        plotter2();
+        break;
+    case 3:
+        plotter3();
+        break;
+    default:
+        printf("Invalid choice.\n");
+    }
+}
+
+void tester()
+{
+    static int arr[MAX];   // static memory allocation
+    int n, ch;
+
+    printf("\nEnter array size: ");
+    scanf("%d", &n);
+
+    if (n > MAX)
+    {
+        printf("\nArray size exceeds maximum limit of %d\n", MAX);
+        return;
+    }
+
+    printf("Enter the array elements: ");
+    for (int i = 0; i < n; i++)
+        scanf("%d", &arr[i]);
+
+    printf("\nEnter \n1. Bubble sort\n2. Insertion Sort.\n3. Selection Sort\n");
+    printf("Enter your choice: ");
+    scanf("%d", &ch);
+
+    switch (ch)
+    {
+    case 1:
+        bubblesort(arr, n);
+        printf("\nArray after bubble sort:\n");
+        for (int i = 0; i < n; i++)
+            printf("%d ", arr[i]);
+        break;
+    case 2:
+        insertionSort(arr, n);
+        printf("\nArray after insertion sort:\n");
+        for (int i = 0; i < n; i++)
+            printf("%d ", arr[i]);
+        break;
+    case 3:
+        selectionSort(arr, n);
+        printf("\nArray after selection sort:\n");
+        for (int i = 0; i < n; i++)
+            printf("%d ", arr[i]);
+        break;
+    default:
+        printf("Invaid choice! ");
+    }
+    printf("\n");
+}
+
+int main()
+{
+    int f;
+    printf("Enter \n1.Tester\n2.Plotter\n");
+    scanf("%d", &f);
+
+    switch (f)
+    {
+    case 1:
+        tester();
+        break;
+    case 2:
+        plotter();
+        break;
+    default:
+        printf("Invalid choice.\n");
+    }
+    return 0;
+}
