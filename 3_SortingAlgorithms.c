@@ -1,3 +1,76 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define MAX 30000
+
+int count;
+
+int bubblesort(int *a, int n)
+{
+    count = 0;
+    int i, j, t, flag = 0;
+    for (i = 0; i < n - 1; i++)
+    {
+        flag = 0;
+        for (j = 0; j < n - i - 1; j++)
+        {
+            count++;
+            if (a[j] > a[j + 1])
+            {
+                t = *(a + j);
+                *(a + j) = *(a + j + 1);
+                *(a + j + 1) = t;
+                flag = 1;
+            }
+        }
+        if (flag == 0)
+        {
+            break;
+        }
+    }
+    return count;
+}
+
+void insertionSort(int *arr, int n)
+{
+    count = 0;
+    for (int i = 1; i < n; i++)
+    {
+        int val = arr[i];
+        int j = i - 1;
+        while (++count && arr[j] > val)
+        {
+            arr[j + 1] = arr[j];
+            j--;
+            if (j < 0)
+                break;
+        }
+        arr[j + 1] = val;
+    }
+}
+
+void selectionSort(int *arr, int n)
+{
+    count = 0;
+    for (int i = 0; i < n - 1; i++)
+    {
+        int pos = i;
+        for (int j = pos + 1; j < n; j++)
+        {
+            count++;
+            if (arr[pos] > arr[j])
+                pos = j;
+        }
+        if (pos != i)
+        {
+            int temp = arr[pos];
+            arr[pos] = arr[i];
+            arr[i] = temp;
+        }
+    }
+}
+
 void plotter1()
 {
     static int arr[MAX];   // static memory allocation
@@ -63,11 +136,3 @@ void plotter2()
         fprintf(f3, "%d\t%d\n", n, count);
 
         if (n < 10000)
-            n *= 10;
-        else
-            n += 10000;
-    }
-    fclose(f1);
-    fclose(f2);
-    fclose(f3);
-}
