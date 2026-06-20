@@ -2,7 +2,10 @@
 #include <stdlib.h>
 #include <time.h>
 
+#define MAX 30000
+
 int count;
+
 int bubblesort(int *a, int n)
 {
     count = 0;
@@ -50,7 +53,6 @@ void insertionSort(int *arr, int n)
 void selectionSort(int *arr, int n)
 {
     count = 0;
-
     for (int i = 0; i < n - 1; i++)
     {
         int pos = i;
@@ -71,39 +73,35 @@ void selectionSort(int *arr, int n)
 
 void plotter1()
 {
-    int *arr, n;
+    static int arr[MAX];   // static memory allocation
+    int n;
     srand(time(NULL));
     FILE *f1, *f2, *f3;
     f1 = fopen("Bubblebest.txt", "w");
     f2 = fopen("Bubbleworst.txt", "w");
     f3 = fopen("Bubbleavg.txt", "w");
     n = 10;
-    while (n <= 30000)
+    while (n <= MAX)
     {
-        arr = (int *)malloc(sizeof(int) * n);
         for (int i = 0; i < n; i++)
-        {
-            *(arr + i) = n - i;
-        }
+            arr[i] = n - i;
         bubblesort(arr, n); // worst case
         fprintf(f2, "%d\t%d\n", n, count);
+
         for (int i = 0; i < n; i++)
-        {
-            *(arr + i) = i + 1;
-        }
+            arr[i] = i + 1;
         bubblesort(arr, n); // best case
         fprintf(f1, "%d\t%d\n", n, count);
+
         for (int i = 0; i < n; i++)
-        {
-            *(arr + i) = rand() % n;
-        }
+            arr[i] = rand() % n;
         bubblesort(arr, n); // average case
         fprintf(f3, "%d\t%d\n", n, count);
+
         if (n < 10000)
             n *= 10;
         else
             n += 10000;
-        free(arr);
     }
     fclose(f1);
     fclose(f2);
@@ -112,39 +110,35 @@ void plotter1()
 
 void plotter2()
 {
-    int *arr, n;
+    static int arr[MAX];   // static memory allocation
+    int n;
     srand(time(NULL));
     FILE *f1, *f2, *f3;
     f1 = fopen("Insertionbest.txt", "w");
     f2 = fopen("Insertionworst.txt", "w");
     f3 = fopen("Insertionavg.txt", "w");
     n = 10;
-    while (n <= 30000)
+    while (n <= MAX)
     {
-        arr = (int *)malloc(sizeof(int) * n);
         for (int i = 0; i < n; i++)
-        {
-            *(arr + i) = n - i;
-        }
+            arr[i] = n - i;
         insertionSort(arr, n); // worst case
         fprintf(f2, "%d\t%d\n", n, count);
+
         for (int i = 0; i < n; i++)
-        {
-            *(arr + i) = i + 1;
-        }
+            arr[i] = i + 1;
         insertionSort(arr, n); // best case
         fprintf(f1, "%d\t%d\n", n, count);
+
         for (int i = 0; i < n; i++)
-        {
-            *(arr + i) = rand() % n;
-        }
+            arr[i] = rand() % n;
         insertionSort(arr, n); // average case
         fprintf(f3, "%d\t%d\n", n, count);
+
         if (n < 10000)
             n *= 10;
         else
             n += 10000;
-        free(arr);
     }
     fclose(f1);
     fclose(f2);
@@ -153,98 +147,112 @@ void plotter2()
 
 void plotter3()
 {
+    static int a[MAX];   // static memory allocation
     FILE *f;
     f = fopen("selectionsort.txt", "w");
-    int j;
     int n = 10;
-    while (n <= 30000)
+    while (n <= MAX)
     {
-        int *a = (int *)malloc(sizeof(int) * n);
         for (int i = 0; i < n; i++)
-            *(a + i) = i;
+            a[i] = i;
         count = 0;
         selectionSort(a, n);
         fprintf(f, "%d\t%d\n", n, count);
+
         if (n < 10000)
             n *= 10;
         else
             n += 10000;
-        free(a);
+    }
+    fclose(f);
+}
+
+void plotter()
+{
+    int ch;
+    printf("\nEnter \n1. Bubble sort\n2. Insertion Sort.\n3. Selection Sort\n");
+    printf("Enter your choice: ");
+    scanf("%d", &ch);
+    switch (ch)
+    {
+    case 1:
+        plotter1();
+        break;
+    case 2:
+        plotter2();
+        break;
+    case 3:
+        plotter3();
+        break;
+    default:
+        printf("Invalid choice.\n");
     }
 }
 
-void main()
+void tester()
 {
-    int *arr, n, ch, f;
+    static int arr[MAX];   // static memory allocation
+    int n, ch;
+
+    printf("\nEnter array size: ");
+    scanf("%d", &n);
+
+    if (n > MAX)
+    {
+        printf("\nArray size exceeds maximum limit of %d\n", MAX);
+        return;
+    }
+
+    printf("Enter the array elements: ");
+    for (int i = 0; i < n; i++)
+        scanf("%d", &arr[i]);
+
+    printf("\nEnter \n1. Bubble sort\n2. Insertion Sort.\n3. Selection Sort\n");
+    printf("Enter your choice: ");
+    scanf("%d", &ch);
+
+    switch (ch)
+    {
+    case 1:
+        bubblesort(arr, n);
+        printf("\nArray after bubble sort:\n");
+        for (int i = 0; i < n; i++)
+            printf("%d ", arr[i]);
+        break;
+    case 2:
+        insertionSort(arr, n);
+        printf("\nArray after insertion sort:\n");
+        for (int i = 0; i < n; i++)
+            printf("%d ", arr[i]);
+        break;
+    case 3:
+        selectionSort(arr, n);
+        printf("\nArray after selection sort:\n");
+        for (int i = 0; i < n; i++)
+            printf("%d ", arr[i]);
+        break;
+    default:
+        printf("Invaid choice! ");
+    }
+    printf("\n");
+}
+
+int main()
+{
+    int f;
     printf("Enter \n1.Tester\n2.Plotter\n");
     scanf("%d", &f);
-    if (f == 1)
+
+    switch (f)
     {
-        printf("\nEnter array size: ");
-        scanf("%d", &n);
-        arr = (int *)malloc(n * sizeof(int));
-        printf("Enter the array elements: ");
-        for (int i = 0; i < n; i++)
-        {
-            scanf("%d", (arr + i));
-        }
-        printf("\nEnter \n1. Bubble sort\n2. Insertion Sort.\n3. Selection Sort\n");
-        printf("Enter your choice: ");
-        scanf("%d", &ch);
-        switch (ch)
-        {
-        case 1:
-            bubblesort(arr, n);
-            printf("\nArray after bubble sort:\n");
-            for (int i = 0; i < n; i++)
-            {
-                printf("%d ", *(arr + i));
-            }
-            break;
-        case 2:
-            insertionSort(arr, n);
-            printf("\nArray after insertion sort:\n");
-            for (int i = 0; i < n; i++)
-            {
-                printf("%d ", *(arr + i));
-            }
-            break;
-        case 3:
-            selectionSort(arr, n);
-            printf("\nArray after selection sort:\n");
-            for (int i = 0; i < n; i++)
-            {
-                printf("%d ", *(arr + i));
-            }
-            break;
-        default:
-            printf("Invaid choice! ");
-        }
-        printf("\n");
-        free(arr);
-    }
-    else if (f == 2)
-    {
-        printf("\nEnter \n1. Bubble sort\n2. Insertion Sort.\n3. Selection Sort\n");
-        printf("Enter your choice: ");
-        scanf("%d", &ch);
-        switch (ch)
-        {
-        case 1:
-            plotter1();
-            break;
-        case 2:
-            plotter2();
-            break;
-        case 3:
-            plotter3();
-            break;
-        default:
-            printf("Invalid choice.\n");
-        }
-    }
-    else
-    {
+    case 1:
+        tester();
+        break;
+    case 2:
+        plotter();
+        break;
+    default:
         printf("Invalid choice.\n");
     }
+    return 0;
 }
