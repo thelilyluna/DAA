@@ -1,13 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int n, opcount = 0, top = -1;
+#define MAX 100
 
-int dfs(int mat[n][n], int *vis, int *track, int source, int *stack)
+int n, opcount = 0, top = -1;
+static int stack[MAX];   // replaces malloc'd stack
+
+int dfs(int mat[][MAX], int *vis, int *track, int source)
 {
     vis[source] = 1;
     track[source] = 1;
-
     for (int i = 0; i < n; i++)
     {
         opcount++;
@@ -15,59 +17,60 @@ int dfs(int mat[n][n], int *vis, int *track, int source, int *stack)
         {
             return 1;
         }
-
-        if (mat[source][i] && !vis[i] && dfs(mat, vis, track, i, stack))
+        if (mat[source][i] && !vis[i] && dfs(mat, vis, track, i))
         {
             return 1;
         }
     }
-
     stack[++top] = source;
     track[source] = 0;
     return 0;
 }
 
-int *checkConnectivity(int mat[n][n])
+int *checkConnectivity(int mat[][MAX])
 {
-    int vis[n], track[n];
-    int* stack = (int*)malloc(n * sizeof(int));
+    static int vis[MAX], track[MAX];   // static memory allocation
 
     for (int i = 0; i < n; i++)
     {
         vis[i] = 0;
+        track[i] = 0;
     }
 
     for (int i = 0; i < n; i++)
     {
         if (!vis[i])
         {
-            if (dfs(mat, &vis[0], &track[0], i, stack))
+            if (dfs(mat, vis, track, i))
             {
                 return NULL;
             }
         }
     }
-
     return stack;
 }
 
 void tester()
 {
+    static int adjMat[MAX][MAX];   // static memory allocation
+
     printf("Enter number of vertices :\n");
     scanf("%d", &n);
-    int adjMat[n][n];
+
+    if (n > MAX)
+    {
+        printf("Number of vertices exceeds maximum limit of %d\n", MAX);
+        return;
+    }
 
     printf("Enter the adjacency matrix :\n");
     for (int i = 0; i < n; i++)
-    {
         for (int j = 0; j < n; j++)
-        {
             scanf("%d", &adjMat[i][j]);
-        }
-    }
 
-    int *stack = checkConnectivity(adjMat);
-    if (stack == NULL)
+    top = -1;
+    int *result = checkConnectivity(adjMat);
+    if (result == NULL)
     {
         printf("Cycle exists..Cannot perform topological sorting!!!");
         exit(0);
@@ -75,23 +78,21 @@ void tester()
     else
     {
         printf("Topological sorting order : \n");
-
         while (top != -1)
         {
-            printf("%d ", stack[top--]);
+            printf("%d ", result[top--]);
         }
     }
 }
 
 void plotter()
 {
-    FILE *f1 = fopen("bfsMatTopSort.txt", "w");
+    static int adjMat[MAX][MAX];   // static memory allocation
 
+    FILE *f1 = fopen("bfsMatTopSort.txt", "w");
     for (int k = 1; k <= 10; k++)
     {
         n = k;
-        int adjMat[n][n];
-
         for (int i = 0; i < n; i++)
             for (int j = 0; j < n; j++)
                 adjMat[i][j] = 0;
@@ -104,15 +105,15 @@ void plotter()
             }
         }
 
-        opcount = 0, top = -1;
+        opcount = 0;
+        top = -1;
         checkConnectivity(adjMat);
         fprintf(f1, "%d\t%d\n", n, opcount);
     }
-
     fclose(f1);
 }
 
-void main()
+int main()
 {
     int choice;
     printf("Enter\n1.Tester\n2.Plotter\n");
@@ -128,4 +129,5 @@ void main()
     default:
         printf("Invalid choice");
     }
+    return 0;
 }
