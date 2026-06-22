@@ -2,95 +2,94 @@
 #include <stdlib.h>
 #include <time.h>
 
-int opcount = 0, dp[25][25], weight[25], profit[25];
+#define MAX 100
 
-int max(int num1, int num2)
+int t[MAX][MAX], v[MAX], w[MAX], n, m, count = 0;
+
+int max(int a, int b)
 {
-    return num1 > num2 ? num1 : num2;
+    return (a > b) ? a : b;
 }
 
-int knapsackMemo(int n, int W)
-{
-    if (dp[n][W] != -1)
-        return dp[n][W];
-
-    opcount++;
-    if (weight[n - 1] <= W)
-        return dp[n][W] = max(knapsackMemo(n - 1, W), profit[n - 1] + knapsackMemo(n - 1, W - weight[n - 1]));
-    else
-        return dp[n][W] = knapsackMemo(n - 1, W);
-}
-
-void init(int n, int W)
+void init()
 {
     for (int i = 0; i <= n; i++)
     {
-        for (int j = 0; j <= W; j++)
+        for (int j = 0; j <= m; j++)
             if (i == 0 || j == 0)
-                dp[i][j] = 0;
+                t[i][j] = 0;
             else
-                dp[i][j] = -1;
+                t[i][j] = -1;
     }
+}
+
+int Knap(int i, int j)
+{
+    if (t[i][j] != -1)
+        return t[i][j];
+    count++;
+    if (w[i - 1] <= j)
+        return t[i][j] = max(Knap(i - 1, j), v[i - 1] + Knap(i - 1, j - w[i - 1]));
+    else
+        return t[i][j] = Knap(i - 1, j);
 }
 
 void tester()
 {
-    int n, W;
     printf("Enter number of items: ");
     scanf("%d", &n);
     printf("Sack capacity: ");
-    scanf("%d", &W);
+    scanf("%d", &m);
     for (int i = 0; i < n; i++)
     {
         printf("Enter weight and profit of item %d :", i + 1);
-        scanf("%d%d", &weight[i], &profit[i]);
+        scanf("%d%d", &w[i], &v[i]);
     }
-    init(n, W);
-    printf("Max profit is %d\n", knapsackMemo(n, W));
+    init();
+    printf("Max profit is %d\n", Knap(n, m));
     for (int i = 0; i <= n; i++)
     {
-        for (int j = 0; j <= W; j++)
-        {
-            printf("%d\t", dp[i][j]);
-        }
+        for (int j = 0; j <= m; j++)
+            printf("%d\t", t[i][j]);
         printf("\n");
     }
     printf("Picked items:\n");
-    int k = W;
+    int k = m;
     for (int i = n; i > 0; i--)
     {
-        if (dp[i][k] != dp[i - 1][k])
+        if (t[i][k] != t[i - 1][k])
         {
             printf("%d\t", i);
-            k -= weight[i - 1];
+            k -= w[i - 1];
         }
     }
-    printf("\nOpcount:%d", opcount);
+    printf("\nOpcount: %d\n", count);
 }
 
 void plotter()
 {
-    FILE *fp = fopen("knapsackMemo.txt", "w");
-    for (int i = 5; i <= 10; i++)
+    FILE *f1 = fopen("KnapMemo.txt", "w");
+    for (int iter = 5; iter <= 10; iter++)
     {
-        int W = i * 2;
-        for (int j = 0; j < i; j++)
+        n = iter;
+        m = iter * 2;
+        for (int i = 0; i < n; i++)
         {
-            weight[j] = rand() % 10 + 1;
-            profit[j] = rand() % 50 + 1;
+            w[i] = rand() % 10 + 1;
+            v[i] = rand() % 50 + 1;
         }
-        init(i, W);
-        opcount = 0;
-        knapsackMemo(i, W);
-        fprintf(fp, "%d\t%d\n", i, opcount);
+        init();
+        count = 0;        // reset AFTER init, exactly as original
+        Knap(n, m);
+        fprintf(f1, "%d\t%d\n", n, count);
     }
-    fclose(fp);
+    fclose(f1);
 }
 
-void main()
+int main()
 {
     int ch;
-    printf("Enter \n1.Tester\n2.Plotter\n");
+    printf("Enter your choice:\n1.Tester\n2.Plotter\n");
     scanf("%d", &ch);
     switch (ch)
     {
@@ -101,6 +100,7 @@ void main()
         plotter();
         break;
     default:
-        printf("Invalid choice.\n");
+        printf("Invalid input\n");
     }
+    return 0;
 }
