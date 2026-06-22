@@ -33,6 +33,8 @@ void bfs(int mat[n][n], int *vis, int source)
 
 void checkConnectivity(int mat[n][n])
 {
+    isCycle=0;
+    components=0;
     int vis[n], k = 1;
     for (int i = 0; i < n; i++)
     {
